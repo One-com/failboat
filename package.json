@@ -1,0 +1,18 @@
+{
+  "name": "failboat",
+  "version": "0.0.0",
+  "description": "Generic error routing",
+  "main": "lib/FailBoat.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "keywords": [
+    "error"
+  ],
+  "author": "Sune Simonsen",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "mocha": "~1.17.1",
+    "unexpected": "~2.1.0"
+  }
+}
