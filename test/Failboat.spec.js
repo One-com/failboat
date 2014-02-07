@@ -21,6 +21,19 @@ describe('Failboat', function () {
         });
     });
 
+    describe('without routes', function () {
+        describe('handleError', function () {
+            it('emits an errorRouted event where matchingRoute is null', function (done) {
+                var err = Failboat.tag({}, 'error');
+                failboat.on('errorRouted', function (err, matchingRoute) {
+                    expect(matchingRoute, 'to be null');
+                    done();
+                });
+                failboat.handleError(err);
+            });
+        });
+    });
+
     describe('tag', function () {
         it('fails when the first argument is not an object', function () {
             expect(function () {
@@ -49,14 +62,6 @@ describe('Failboat', function () {
             it('appends the tags to the tags list', function () {
                 Failboat.tag(err, 'some', 'tags');
                 expect(err.tags, 'to equal', ['this', 'is', 'some', 'tags']);
-            });
-        });
-    });
-
-    describe('without routes', function () {
-        describe('handleError', function () {
-            it('emits an errorRouted event', function () {
-                
             });
         });
     });
