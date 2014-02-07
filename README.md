@@ -55,54 +55,62 @@ Given the example code above the following errors will result in the
 output shown below:
 
 ```js
-var err = Failboat.tag(new Error(), ['404', 'FolderNotFound', 'LoadMailsAction']);
+var err = Failboat.tag(new Error(), '404', 'FolderNotFound', 'LoadMailsAction');
 failboat.handleError(err);
 ```
 will print `Folder not found while loading mails` to the console.
 
 
 ```js
-var err = Failboat.tag(new Error(), ['404', 'FolderNotFound']);
+var err = Failboat.tag(new Error(), '404', 'FolderNotFound');
 failboat.handleError(err);
 ```
 will print `Folder not found` to the console.
 
 
 ```js
-var err = Failboat.tag(new Error(), ['404']);
+var err = Failboat.tag(new Error(), '404');
 failboat.handleError(err);
 ```
 will print `Generic not found handler` to the console.
 
 
 ```js
-var err = Failboat.tag(new Error(), ['404', 'MailNotFound', 'GetMailPartAction']);
+var err = Failboat.tag(new Error(), '404', 'MailNotFound', 'GetMailPartAction');
 failboat.handleError(err);
 ```
 will print `Generic not found handler` to the console.
 
 
 ```js
-var err = Failboat.tag(new Error(), ['404', 'LoadMails']);
+var err = Failboat.tag(new Error(), '404', 'LoadMails');
 failboat.handleError(err);
 ```
 will print `Unauthorized operation` to the console.
 
 
 ```js
-var err = Failboat.tag(new Error(), ['404', 'FolderNotFound', 'LoadMailsAction']);
+var err = Failboat.tag(new Error(), '404', 'FolderNotFound', 'LoadMailsAction');
 failboat.handleError(err);
 ```
 will print `Folder not found while loading mails` to the console.
 
 
 ```js
-var err = Failboat.tag(new Error(), ['404', 'FolderNotFound']);
+var err = Failboat.tag(new Error(), '404', 'FolderNotFound');
 failboat.handleError(err);
 ```
 will print `Folder not found` to the console.
 
 ## API
+
+### new Failboat()
+
+Creates a new failboat without routes.
+
+```js
+var failboat = new Failboat();
+```
 
 ### new Failboat(routes)
 
@@ -147,7 +155,7 @@ appropiate handler it will delegate to it's parent failboat for
 handling the error.
 
 ```js
-var err = Failboat.tag(new Error(), ['404', 'FolderNotFound', 'LoadMailsAction']);
+var err = Failboat.tag(new Error(), '404', 'FolderNotFound', 'LoadMailsAction');
 failboat.handleError(err);
 ```
 
@@ -163,7 +171,7 @@ failboat.extend(routes).handleError(err);
 
 Attaches a handler for the given . 
 
-When an error has been routed a `errorRouted` event will be
+When an error has been routed an `errorRouted` event will be
 emitted. That gives you the posibility to do logging and crash
 reporting in a central place.
 
