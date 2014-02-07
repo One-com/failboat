@@ -1,6 +1,9 @@
 /*global describe, it, beforeEach*/
 var expect = require('unexpected');
+expect.installPlugin(require('unexpected-sinon'));
+var sinon = require('sinon');
 var Failboat = require('../lib/Failboat');
+
 describe('Failboat', function () {
     var failboat;
     beforeEach(function () {
@@ -32,6 +35,29 @@ describe('Failboat', function () {
                 failboat.handleError(err);
             });
         });
+    });
+
+    describe('with routes configured', function () {
+        var spy;
+        beforeEach(function () {
+            spy = sinon.spy();
+            failboat = new Failboat();
+            failboat.addRoute('404', 'FolderNotFound', 'LoadMailsAction', spy)
+                    .addRoute('404 FolderNotFound', spy)
+                    .addRoute(['404', 'LoadMailsAction'], spy)
+                    .addRoute('404', spy);
+        });
+
+        it('routes errors to the most specific route', function () {
+            var err = Failboat.tag({}, '404', 'FolderNotFound');
+            failboat.on('errorRouted', function (err, matchingRoute) {
+                expect(matchingRoute.join(' '), 'to equal',
+                       '404 FolderNotFound');
+            });
+            failboat.handleError(err);
+            expect(spy, 'was called once');
+        });
+        
     });
 
     describe('tag', function () {
