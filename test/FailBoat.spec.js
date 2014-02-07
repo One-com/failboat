@@ -2,16 +2,22 @@
 var expect = require('unexpected');
 var FailBoat = require('../lib/FailBoat');
 describe('FailBoat', function () {
-    var errorHandler;
+    var failboat;
     beforeEach(function () {
-        errorHandler = new FailBoat();
+        failboat = new FailBoat();
     });
 
-    describe('route', function () {
+    describe('handleError', function () {
         it('fails when not given an error object', function () {
             expect(function () {
-                errorHandler.route();
-            }, 'to throw', 'FailBoat.route requires an error object as the first argument');
+                failboat.handleError();
+            }, 'to throw', 'FailBoat.handleError requires a tagged error object as the first argument');
+        });
+
+        it('fails when given an error object without tags', function () {
+            expect(function () {
+                failboat.handleError({});
+            }, 'to throw', 'FailBoat.handleError requires a tagged error object as the first argument');
         });
     });
 });
