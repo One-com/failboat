@@ -28,16 +28,28 @@ describe('Failboat', function () {
             }, 'to throw', 'Failboat.tag requires an object as the first paramenter');
         });
 
-        it('fails when only less than two arguments', function () {
+        it('fails when given anything else but strings as tags', function () {
             expect(function () {
-                Failboat.tag(34);
-            }, 'to throw', 'Failboat.tag requires atleast two arguments');
+                Failboat.tag({}, 'this', null, 'some', 'tags');
+            }, 'to throw', 'Failboat.tag require tags to be strings was given: "null"');
         });
 
-        it('sets the tags property on the error object to the given array of tags', function () {
+        it('added the given tags to the error object', function () {
             var err = {};
             Failboat.tag(err, 'this', 'is', 'some', 'tags');
             expect(err.tags, 'to equal', ['this', 'is', 'some', 'tags']);
+        });
+        
+        describe('on an error object that has already been tagged', function () {
+            var err = {};
+            beforeEach(function () {
+                Failboat.tag(err, 'this', 'is');
+            });
+
+            it('appends the tags to the tags list', function () {
+                Failboat.tag(err, 'some', 'tags');
+                expect(err.tags, 'to equal', ['this', 'is', 'some', 'tags']);
+            });
         });
     });
 
