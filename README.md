@@ -130,6 +130,11 @@ var failboat = new Failboat({
 });
 ```
 
+### Failboat.tag(err, tags...)
+
+Tags the err with the given tags. If the error has already been tagged
+the tags will be added to the list of tags.
+
 ### failboat.extend(routes)
 
 Creates a new failboat with the given routes and a pointer to the
