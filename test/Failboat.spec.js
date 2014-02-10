@@ -42,19 +42,19 @@ describe('Failboat', function () {
         beforeEach(function () {
             routes =  {
                 '404 FolderNotFound': sinon.spy(),
-                '404 LoadMailsAction': sinon.spy(),
+                '404 MailNotFound': sinon.spy(),
                 '404 FolderNotFound LoadMailsAction': sinon.spy(),
                 '404': sinon.spy()
             };
             failboat = new Failboat(routes);
         });
 
-        it('routes errors to the most specific route', function () {
-            var err = Failboat.tag({}, '404', 'FolderNotFound');
-            failboat.handleError(err);
-            expect(routes['404 FolderNotFound'], 'was called once');
+        ['404', '404 FolderNotFound', '404 FolderNotFound LoadMailsAction', '404 MailNotFound'].forEach(function (tags) {
+            it('routes errors to the most specific route for tags: ' + tags, function () {
+                failboat.handleError(Failboat.tag({}, tags));
+                expect(routes[tags], 'was called once');
+            });
         });
-        
     });
 
     describe('tag', function () {
