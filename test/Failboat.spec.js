@@ -28,10 +28,10 @@ describe('Failboat', function () {
         describe('handleError', function () {
             it('emits an errorRouted event where matchingRoute is null', function (done) {
                 var err = Failboat.tag({}, 'error');
-                failboat.on('errorRouted', function (err, matchingRoute) {
+                failboat.onErrorRouted = function (err, matchingRoute) {
                     expect(matchingRoute, 'to be null');
                     done();
-                });
+                };
                 failboat.handleError(err);
             });
         });
