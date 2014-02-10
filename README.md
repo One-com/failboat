@@ -47,9 +47,8 @@ When you call `handleError` on a failboat it will try to route the
 error at the top level, if it does not find an appropiate handler it
 will call `handleError` on the parent failboat.
 
-Routing an error will go through the handlers in the order
-they are specified and pick the first handler where all the words of
-the key is contained in the tags array on the error.
+Routing an error will find the route where the words matches the
+longest prefix of the tags array.
 
 Given the example code above the following errors will result in the
 output shown below:
@@ -83,17 +82,10 @@ will print `Generic not found handler` to the console.
 
 
 ```js
-var err = Failboat.tag(new Error(), '404', 'LoadMails');
+var err = Failboat.tag(new Error(), '401', 'LoadMailsAction');
 failboat.handleError(err);
 ```
 will print `Unauthorized operation` to the console.
-
-
-```js
-var err = Failboat.tag(new Error(), '404', 'FolderNotFound', 'LoadMailsAction');
-failboat.handleError(err);
-```
-will print `Folder not found while loading mails` to the console.
 
 
 ```js
@@ -118,11 +110,11 @@ Creates a new failboat with the given routes.
 
 ```js
 var failboat = new Failboat({
-    '404 FolderNotFound': function () {
-        console.log('Folder not found');
-    },
     '404': function () {
         console.log('Generic not found handler');
+    },
+    '404 FolderNotFound': function () {
+        console.log('Folder not found');
     },
     '409': function () {
         console.log('Generic conflict handler');
@@ -132,7 +124,7 @@ var failboat = new Failboat({
 
 ### Failboat.tag(err, tags...)
 
-Tags the err with the given tags. If the error has already been tagged
+Add the given tags to the err. If the error has already been tagged
 the tags will be added to the list of tags.
 
 ```js
@@ -160,11 +152,10 @@ failboat = failboat.extend({
 Routes the given error to a handler based on the configured routes and
 the tags on the error.
 
-Routing an error will go through the handlers in the order they are
-specified and pick the first handler where all the words of the key is
-contained in the tags array on the error. If it does not find an
-appropiate handler it will delegate to it's parent failboat for
-handling the error.
+Routing an error will find the route where the words matches the
+longest prefix of the tags array. If it does not find an appropiate
+handler it will delegate to it's parent failboat for handling the
+error.
 
 ```js
 var err = Failboat.tag(new Error(), '404', 'FolderNotFound', 'LoadMailsAction');
@@ -179,20 +170,18 @@ Syntaxtic sugar for:
 failboat.extend(routes).handleError(err);
 ```
 
-### Event: failboat.on('errorRouted', handler);
+### Event: failboat.onErrorRouted = handler
 
-Attaches a handler for the given . 
+When an error has been routed an `onErrorRouted` will be called with
+the error and the matching route. That gives you the posibility to do
+logging and crash reporting in a central place.
 
-When an error has been routed an `errorRouted` event will be
-emitted. That gives you the posibility to do logging and crash
-reporting in a central place.
-
-When you extend a failboat it shares the event bus with the parent
-failboat. That means it does not matter at which level you attach your
-event handlers.
+The `onErrorRouted` will be called for each failboat where a handler
+has been attached. Usually the `onErrorRouted` handler should be
+attached to the base failboat.
 
 ```js
-failboat.on('routing', function (err, matchingRoute) {
+failboat.onErrorRouted = function (err, matchingRoute) {
     if (matchingRoute) {
         console.log('Error: "' + err.message + '" handled by ' + matchingRoute);
         if (500 <= err.status && err.status < 600) {
@@ -201,5 +190,5 @@ failboat.on('routing', function (err, matchingRoute) {
     } else {
         console.log('Missing handler for: "' + err.message + '"');
     }
-});
+};
 ```
