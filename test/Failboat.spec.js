@@ -40,12 +40,11 @@ describe('Failboat', function () {
     describe('with routes configured', function () {
         var routes;
         beforeEach(function () {
-            var spy = sinon.spy();
             routes =  {
-                '404 FolderNotFound': spy,
-                '404 LoadMailsAction': spy,
-                '404 FolderNotFound LoadMailsAction': spy,
-                '404': spy
+                '404 FolderNotFound': sinon.spy(),
+                '404 LoadMailsAction': sinon.spy(),
+                '404 FolderNotFound LoadMailsAction': sinon.spy(),
+                '404': sinon.spy()
             };
             failboat = new Failboat(routes);
         });
