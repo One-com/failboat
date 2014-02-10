@@ -38,24 +38,22 @@ describe('Failboat', function () {
     });
 
     describe('with routes configured', function () {
-        var spy;
+        var routes;
         beforeEach(function () {
-            spy = sinon.spy();
-            failboat = new Failboat();
-            failboat.addRoute('404', 'FolderNotFound', 'LoadMailsAction', spy)
-                    .addRoute('404 FolderNotFound', spy)
-                    .addRoute(['404', 'LoadMailsAction'], spy)
-                    .addRoute('404', spy);
+            var spy = sinon.spy();
+            routes =  {
+                '404 FolderNotFound': spy,
+                '404 LoadMailsAction': spy,
+                '404 FolderNotFound LoadMailsAction': spy,
+                '404': spy
+            };
+            failboat = new Failboat(routes);
         });
 
         it('routes errors to the most specific route', function () {
             var err = Failboat.tag({}, '404', 'FolderNotFound');
-            failboat.on('errorRouted', function (err, matchingRoute) {
-                expect(matchingRoute.join(' '), 'to equal',
-                       '404 FolderNotFound');
-            });
             failboat.handleError(err);
-            expect(spy, 'was called once');
+            expect(routes['404 FolderNotFound'], 'was called once');
         });
         
     });
