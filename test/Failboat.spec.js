@@ -143,6 +143,23 @@ describe('Failboat', function () {
         });
     });
 
+    describe('route syntax', function () {
+        var routes;
+        beforeEach(function () {
+            routes =  {
+                '404 FolderNotFound, 404 MailNotFound': sinon.spy()
+            };
+            failboat = new Failboat(routes);
+            failboat.onErrorRouted = sinon.spy();
+        });
+
+        it('one key can contain multiple routes', function () {
+            failboat.handleError(Failboat.tag({}, '404 FolderNotFound'));
+            failboat.handleError(Failboat.tag({}, '404 MailNotFound'));
+            expect(routes['404 FolderNotFound, 404 MailNotFound'], 'was called twice');
+        });
+    });
+
     describe('tag', function () {
         it('fails when the first argument is not an object', function () {
             expect(function () {
