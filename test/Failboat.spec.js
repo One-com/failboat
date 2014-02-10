@@ -50,10 +50,27 @@ describe('Failboat', function () {
         });
 
         ['404', '404 FolderNotFound', '404 FolderNotFound LoadMailsAction', '404 MailNotFound'].forEach(function (tags) {
-            it('routes errors to the most specific route for tags: ' + tags, function () {
+            it('route errors to the most specific route for tags: ' + tags, function () {
                 failboat.handleError(Failboat.tag({}, tags));
                 expect(routes[tags], 'was called once');
             });
+            
+            it('emits an errorRouted event with the matchingRoute for tags: ' + tags, function (done) {
+                failboat.onErrorRouted = function (err, matchingRoute) {
+                    expect(matchingRoute, 'to be', tags);
+                    done();
+                };
+                failboat.handleError(Failboat.tag({}, tags));
+            });
+        });
+
+        it('tags with no corresponding route emits an errorRouted event where matchingRoute is null', function (done) {
+            var err = Failboat.tag({}, 'error');
+            failboat.onErrorRouted = function (err, matchingRoute) {
+                expect(matchingRoute, 'to be null');
+                done();
+            };
+            failboat.handleError(err);
         });
     });
 
