@@ -83,7 +83,7 @@ describe('Failboat', function () {
 
         it('added the given tags to the error object', function () {
             var err = {};
-            Failboat.tag(err, 'this', 'is', 'some', 'tags');
+            Failboat.tag(err, 'this', 'is', 'some tags');
             expect(err.tags, 'to equal', ['this', 'is', 'some', 'tags']);
         });
         
