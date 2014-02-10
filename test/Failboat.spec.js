@@ -23,6 +23,20 @@ describe('Failboat', function () {
                 failboat.handleError({});
             }, 'to throw', 'Failboat.handleError requires a tagged error object as the first argument');
         });
+
+        describe('given routes', function () {
+            it('is syntactic for failboat.extend(routes).handleError(err)', function () {
+                var extendedFailboat = {
+                    handleError: sinon.spy()
+                };
+                failboat.extend = sinon.stub().returns(extendedFailboat);
+
+                var err = Failboat.tag({}, 'error');
+                failboat.handleError(err, {});
+
+                expect(extendedFailboat.handleError, 'was called with', err);
+            });
+        });
     });
 
     describe('without routes', function () {
@@ -66,7 +80,6 @@ describe('Failboat', function () {
             failboat.handleError(err);
             expect(failboat.onErrorRouted, 'was called with', err, null);
         });
-
 
         describe('extend', function () {
             var extendedRoutes, extendedFailboat;
