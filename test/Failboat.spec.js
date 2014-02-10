@@ -66,6 +66,68 @@ describe('Failboat', function () {
             failboat.handleError(err);
             expect(failboat.onErrorRouted, 'was called with', err, null);
         });
+
+
+        describe('extend', function () {
+            var extendedRoutes, extendedFailboat;
+            beforeEach(function () {
+                extendedRoutes =  {
+                    '404 FolderNotFound': sinon.spy(),
+                    '404 ContactNotFound': sinon.spy(),
+                    '409 ContactConflict': sinon.spy()
+                };
+                extendedFailboat = failboat.extend(extendedRoutes);
+                extendedFailboat.onErrorRouted = sinon.spy();
+            });
+
+            it('creats a new failboat with parent pointer to the failboat being extended', function () {
+                expect(extendedFailboat.parent, 'to be', failboat);
+            });
+
+            ['404', '404 MailNotFound'].forEach(function (tags) {
+                it('route errors to the most specific route on the parent failboat for tags: ' + tags, function () {
+                    extendedFailboat.handleError(Failboat.tag({}, tags));
+                    expect(routes[tags], 'was called once');
+                });
+                
+                it('emits an errorRouted event on the parent failboat with the matchingRoute for tags: ' + tags, function () {
+                    var err = Failboat.tag({}, tags);
+                    extendedFailboat.handleError(err);
+                    expect(failboat.onErrorRouted, 'was called with', err, tags);
+                    expect(extendedFailboat.onErrorRouted, 'was called with', err, null);
+                });
+
+                it('emits an errorRouted event on the extended failboat with the matchingRoute=null for tags: ' + tags, function () {
+                    var err = Failboat.tag({}, tags);
+                    extendedFailboat.handleError(err);
+                    expect(extendedFailboat.onErrorRouted, 'was called with', err, null);
+                });
+            });
+
+            ['404 FolderNotFound', '404 ContactNotFound', '409 ContactConflict'].forEach(function (tags) {
+                it('route errors to the most specific route on the extended failboat for tags: ' + tags, function () {
+                    extendedFailboat.handleError(Failboat.tag({}, tags));
+                    expect(extendedRoutes[tags], 'was called once');
+                });
+                
+                it('emits an errorRouted event on the extended failboat with the matchingRoute for tags: ' + tags, function () {
+                    var err = Failboat.tag({}, tags);
+                    extendedFailboat.handleError(err);
+                    expect(extendedFailboat.onErrorRouted, 'was called with', err, tags);
+                });
+            });
+
+            it('route errors to the most specific route on the extended failboat even when there is a more specific route on the parent', function () {
+                extendedFailboat.handleError(Failboat.tag({}, '404 FolderNotFound LoadMailsAction'));
+                expect(extendedRoutes['404 FolderNotFound'], 'was called once');
+            });
+
+            it('tags with no corresponding route emits an errorRouted event where matchingRoute is null', function () {
+                var err = Failboat.tag({}, 'error');
+                extendedFailboat.handleError(err);
+                expect(failboat.onErrorRouted, 'was called with', err, null);
+            });
+        });
     });
 
     describe('tag', function () {
