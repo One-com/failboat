@@ -8,6 +8,7 @@ describe('Failboat', function () {
     var failboat;
     beforeEach(function () {
         failboat = new Failboat();
+        failboat.onErrorRouted = sinon.spy();
     });
 
     describe('handleError', function () {
@@ -26,13 +27,10 @@ describe('Failboat', function () {
 
     describe('without routes', function () {
         describe('handleError', function () {
-            it('emits an errorRouted event where matchingRoute is null', function (done) {
+            it('emits an errorRouted event where matchingRoute is null', function () {
                 var err = Failboat.tag({}, 'error');
-                failboat.onErrorRouted = function (err, matchingRoute) {
-                    expect(matchingRoute, 'to be null');
-                    done();
-                };
                 failboat.handleError(err);
+                expect(failboat.onErrorRouted, 'was called with', err, null);
             });
         });
     });
@@ -47,6 +45,7 @@ describe('Failboat', function () {
                 '404': sinon.spy()
             };
             failboat = new Failboat(routes);
+            failboat.onErrorRouted = sinon.spy();
         });
 
         ['404', '404 FolderNotFound', '404 FolderNotFound LoadMailsAction', '404 MailNotFound'].forEach(function (tags) {
@@ -55,22 +54,17 @@ describe('Failboat', function () {
                 expect(routes[tags], 'was called once');
             });
             
-            it('emits an errorRouted event with the matchingRoute for tags: ' + tags, function (done) {
-                failboat.onErrorRouted = function (err, matchingRoute) {
-                    expect(matchingRoute, 'to be', tags);
-                    done();
-                };
-                failboat.handleError(Failboat.tag({}, tags));
+            it('emits an errorRouted event with the matchingRoute for tags: ' + tags, function () {
+                var err = Failboat.tag({}, tags);
+                failboat.handleError(err);
+                expect(failboat.onErrorRouted, 'was called with', err, tags);
             });
         });
 
-        it('tags with no corresponding route emits an errorRouted event where matchingRoute is null', function (done) {
+        it('tags with no corresponding route emits an errorRouted event where matchingRoute is null', function () {
             var err = Failboat.tag({}, 'error');
-            failboat.onErrorRouted = function (err, matchingRoute) {
-                expect(matchingRoute, 'to be null');
-                done();
-            };
             failboat.handleError(err);
+            expect(failboat.onErrorRouted, 'was called with', err, null);
         });
     });
 
