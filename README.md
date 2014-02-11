@@ -22,6 +22,9 @@ var failboat = new Failboat({
     },
     '409': function () {
         console.log('Generic conflict handler');
+    },
+    '502, 503': function () {
+        console.log('Could not connect to the server');
     }
 });
 
@@ -57,6 +60,7 @@ output shown below:
 var err = Failboat.tag(new Error(), '404', 'FolderNotFound', 'LoadMailsAction');
 failboat.handleError(err);
 ```
+
 will print `Folder not found while loading mails` to the console.
 
 
@@ -64,6 +68,7 @@ will print `Folder not found while loading mails` to the console.
 var err = Failboat.tag(new Error(), '404', 'FolderNotFound');
 failboat.handleError(err);
 ```
+
 will print `Folder not found` to the console.
 
 
@@ -71,6 +76,7 @@ will print `Folder not found` to the console.
 var err = Failboat.tag(new Error(), '404');
 failboat.handleError(err);
 ```
+
 will print `Generic not found handler` to the console.
 
 
@@ -78,6 +84,7 @@ will print `Generic not found handler` to the console.
 var err = Failboat.tag(new Error(), '404', 'MailNotFound', 'GetMailPartAction');
 failboat.handleError(err);
 ```
+
 will print `Generic not found handler` to the console.
 
 
@@ -85,6 +92,7 @@ will print `Generic not found handler` to the console.
 var err = Failboat.tag(new Error(), '401', 'LoadMailsAction');
 failboat.handleError(err);
 ```
+
 will print `Unauthorized operation` to the console.
 
 
@@ -92,7 +100,22 @@ will print `Unauthorized operation` to the console.
 var err = Failboat.tag(new Error(), '404', 'FolderNotFound');
 failboat.handleError(err);
 ```
+
 will print `Folder not found` to the console.
+
+```js
+var err = Failboat.tag(new Error(), '502');
+failboat.handleError(err);
+```
+
+will print `Could not connect to the server` to the console.
+
+```js
+var err = Failboat.tag(new Error(), '503');
+failboat.handleError(err);
+```
+
+will print `Could not connect to the server` to the console.
 
 ## API
 
