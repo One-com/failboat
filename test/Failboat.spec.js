@@ -167,16 +167,22 @@ describe('Failboat', function () {
             }, 'to throw', 'Failboat.tag requires an object as the first paramenter');
         });
 
-        it('fails when given anything else but strings as tags', function () {
+        it('fails when given anything else but strings and numbers as tags', function () {
             expect(function () {
                 Failboat.tag({}, 'this', null, 'some', 'tags');
-            }, 'to throw', 'Failboat.tag require tags to be strings was given: "null"');
+            }, 'to throw', 'Failboat.tag require tags to be strings or numbers was given: "null"');
         });
 
         it('added the given tags to the error object', function () {
             var err = {};
             Failboat.tag(err, 'this', 'is', 'some tags');
             expect(err.tags, 'to equal', ['this', 'is', 'some', 'tags']);
+        });
+
+        it('numbers are allowed as tags', function () {
+            var err = {};
+            Failboat.tag(err, 0, 1, 2, 3);
+            expect(err.tags, 'to equal', ['0', '1', '2', '3']);
         });
         
         describe('on an error object that has already been tagged', function () {
