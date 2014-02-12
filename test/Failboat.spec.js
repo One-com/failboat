@@ -81,6 +81,29 @@ describe('Failboat', function () {
             expect(failboat.onErrorRouted, 'was called with', err, null);
         });
 
+        describe('given an execution context', function () {
+            var context;
+            beforeEach(function () {
+                routes =  {
+                    '404 FolderNotFound': function () {
+                        this.showError('Folder not found');
+                    }
+                };
+                context = {
+                    showError: sinon.spy()
+                };
+                failboat = new Failboat(routes, context);
+            });
+            it('error handlers are executed in that context', function () {
+                failboat.handleError(Failboat.tag({}, '404 FolderNotFound'));
+                expect(context.showError, 'was called with', 'Folder not found');
+            });
+
+            it('extending the failboat inherits the context from the parent', function () {
+                expect(failboat.extend({})._context, 'to be', context);
+            });
+        });
+
         describe('extend', function () {
             var extendedRoutes, extendedFailboat;
             beforeEach(function () {
@@ -93,8 +116,8 @@ describe('Failboat', function () {
                 extendedFailboat.onErrorRouted = sinon.spy();
             });
 
-            it('creats a new failboat with parent pointer to the failboat being extended', function () {
-                expect(extendedFailboat.parent, 'to be', failboat);
+            it('creates a new failboat with parent pointer to the failboat being extended', function () {
+                expect(extendedFailboat._parent, 'to be', failboat);
             });
 
             ['404', '404 MailNotFound'].forEach(function (tags) {

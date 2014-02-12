@@ -13,30 +13,36 @@ error contains a property `tags` that is a non-empty array of strings.
 The routing is best explained by example.
 
 ```js
+var context = {
+    showError: function (message) {
+        console.log(message);
+    }
+};
+
 var failboat = new Failboat({
     '404 FolderNotFound': function () {
-        console.log('Folder not found');
+        this.showError('Folder not found');
     },
     '404': function () {
-        console.log('Generic not found handler');
+        this.showError('Generic not found handler');
     },
     '409': function () {
-        console.log('Generic conflict handler');
+        this.showError('Generic conflict handler');
     },
     '502, 503': function () {
-        console.log('Could not connect to the server');
+        this.showError('Could not connect to the server');
     }
-});
+}, context);
 
 failboat = failboat.extend({
     '401': function () {
-        console.log('Unauthorized operation');
+        this.showError('Unauthorized operation');
     }
 });
 
 failboat = failboat.extend({
     '404 FolderNotFound LoadMailsAction': function (err) {
-        console.log('Folder not found while loading mails');
+        this.showError('Folder not found while loading mails');
     }
 });
 ```
@@ -45,6 +51,10 @@ The above code defines a failboat with three levels. The first
 configuration is the base level. When a failboat is extended a new
 failboat is created with the given configuration. The child failboat
 will have a reference to the parent failboat.
+
+Each error handler function is executed in the context given to the
+base failboat. When extending a failboat the execution context is
+inherited from the parent.
 
 When you call `handleError` on a failboat it will try to route the
 error at the top level, if it does not find an appropiate handler it
@@ -143,6 +153,32 @@ var failboat = new Failboat({
         console.log('Generic conflict handler');
     }
 });
+```
+
+### new Failboat(routes, context)
+
+Creates a new failboat with the given routes. Each error handler will
+be executed in the given context. If the failboat is extended the
+context will be inherited.
+
+```js
+var context = {
+    showError: function (message) {
+        console.log(message);
+    }
+};
+
+var failboat = new Failboat({
+    '404': function () {
+        this.showError('Generic not found handler');
+    },
+    '404 FolderNotFound': function () {
+        this.showError('Folder not found');
+    },
+    '409': function () {
+        this.showError('Generic conflict handler');
+    }
+}, context);
 ```
 
 ### Failboat.tag(err, tags...)
