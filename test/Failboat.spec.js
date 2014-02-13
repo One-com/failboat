@@ -130,7 +130,6 @@ describe('Failboat', function () {
                     var err = Failboat.tag({}, tags);
                     extendedFailboat.handleError(err);
                     expect(failboat.onErrorRouted, 'was called with', err, tags);
-                    expect(extendedFailboat.onErrorRouted, 'was called with', err, null);
                 });
 
                 it('emits an errorRouted event on the extended failboat with the matchingRoute=null for tags: ' + tags, function () {
@@ -150,6 +149,12 @@ describe('Failboat', function () {
                     var err = Failboat.tag({}, tags);
                     extendedFailboat.handleError(err);
                     expect(extendedFailboat.onErrorRouted, 'was called with', err, tags);
+                });
+
+                it('emits an errorRouted event on the parent failboat with the matchingRoute for tags: ' + tags, function () {
+                    var err = Failboat.tag({}, tags);
+                    extendedFailboat.handleError(err);
+                    expect(failboat.onErrorRouted, 'was called with', err, tags);
                 });
             });
 
