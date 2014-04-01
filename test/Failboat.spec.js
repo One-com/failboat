@@ -67,7 +67,7 @@ describe('Failboat', function () {
                 failboat.handleError(Failboat.tag({}, tags));
                 expect(routes[tags], 'was called once');
             });
-            
+
             it('emits an errorRouted event with the matchingRoute for tags: ' + tags, function () {
                 var err = Failboat.tag({}, tags);
                 failboat.handleError(err);
@@ -125,7 +125,7 @@ describe('Failboat', function () {
                     extendedFailboat.handleError(Failboat.tag({}, tags));
                     expect(routes[tags], 'was called once');
                 });
-                
+
                 it('emits an errorRouted event on the parent failboat with the matchingRoute for tags: ' + tags, function () {
                     var err = Failboat.tag({}, tags);
                     extendedFailboat.handleError(err);
@@ -144,7 +144,7 @@ describe('Failboat', function () {
                     extendedFailboat.handleError(Failboat.tag({}, tags));
                     expect(extendedRoutes[tags], 'was called once');
                 });
-                
+
                 it('emits an errorRouted event on the extended failboat with the matchingRoute for tags: ' + tags, function () {
                     var err = Failboat.tag({}, tags);
                     extendedFailboat.handleError(err);
@@ -212,7 +212,7 @@ describe('Failboat', function () {
             Failboat.tag(err, 0, 1, 2, 3);
             expect(err.tags, 'to equal', ['0', '1', '2', '3']);
         });
-        
+
         describe('on an error object that has already been tagged', function () {
             var err = {};
             beforeEach(function () {
