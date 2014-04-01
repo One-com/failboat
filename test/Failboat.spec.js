@@ -75,6 +75,28 @@ describe('Failboat', function () {
             });
         });
 
+        describe('when a route maps to a new route', function () {
+            describe('and the route exist on this failboat', function () {
+                it('route the error to the alias', function () {
+                    var spy = sinon.spy();
+                    failboat.handleError(Failboat.tag({}, '444 MailNotFound'), {
+                        '404 MailNotFound': spy,
+                        '444 MailNotFound': '404 MailNotFound'
+                    });
+                    expect(spy, 'was called once');
+                });
+            });
+
+            describe('and the route does not exist on this failboat', function () {
+                it('route the error to the parent with the alias', function () {
+                    failboat.handleError(Failboat.tag({}, '444 MailNotFound'), {
+                        '444 MailNotFound': '404 MailNotFound'
+                    });
+                    expect(routes['404 MailNotFound'], 'was called once');
+                });
+            });
+        });
+
         it('tags with no corresponding route emits an errorRouted event where matchingRoute is null', function () {
             var err = Failboat.tag({}, 'error');
             failboat.handleError(err);

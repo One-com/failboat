@@ -31,7 +31,8 @@ var failboat = new Failboat({
     },
     '502, 503': function () {
         this.showError('Could not connect to the server');
-    }
+    },
+    '12029': '503'
 }, context);
 
 failboat = failboat.extend({
@@ -122,6 +123,13 @@ will print `Could not connect to the server` to the console.
 
 ```js
 var err = Failboat.tag(new Error(), '503');
+failboat.handleError(err);
+```
+
+will print `Could not connect to the server` to the console.
+
+```js
+var err = Failboat.tag(new Error(), '12029');
 failboat.handleError(err);
 ```
 
