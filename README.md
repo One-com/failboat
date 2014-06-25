@@ -1,5 +1,7 @@
 # Failboat
 
+![Your Shipment of Fail has Arrived](shipment_of_fail.jpg "Your Shipment of Fail has Arrived")
+
 Failboat is the boat that transports your failures to the right
 destination.
 
