@@ -259,3 +259,8 @@ failboat.onErrorRouted = function (err, matchingRoute) {
     }
 };
 ```
+
+## License
+Copyright © 2014, One.com
+
+Failboat is licensed under the BSD 3-clause license, as given at http://opensource.org/licenses/BSD-3-Clause
