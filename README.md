@@ -165,6 +165,9 @@ var failboat = new Failboat({
 });
 ```
 
+If you make a route called `*` all error that can't be routed to a
+more specific will fallback use this route.
+
 ### new Failboat(routes, context)
 
 Creates a new failboat with the given routes. Each error handler will
