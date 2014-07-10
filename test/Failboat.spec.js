@@ -193,6 +193,50 @@ describe('Failboat', function () {
         });
     });
 
+    describe('with a catch all route configured', function () {
+        var routes, parentRoutes, extendedFailboat;
+
+        beforeEach(function () {
+            parentRoutes =  {
+                '401': sinon.spy()
+            };
+
+            routes =  {
+                '404 FolderNotFound': sinon.spy(),
+                '404': sinon.spy(),
+                '*': sinon.spy()
+            };
+            failboat = new Failboat(parentRoutes).extend(routes);
+            failboat.onErrorRouted = sinon.spy();
+        });
+
+        ['404', '404 FolderNotFound'].forEach(function (tags) {
+            it('route errors to the most specific route for tags: ' + tags, function () {
+                failboat.handleError(Failboat.tag({}, tags));
+                expect(routes[tags], 'was called once');
+            });
+
+            it('emits an errorRouted event with the matchingRoute for tags: ' + tags, function () {
+                var err = Failboat.tag({}, tags);
+                failboat.handleError(err);
+                expect(failboat.onErrorRouted, 'was called with', err, tags);
+            });
+        });
+
+        ['503', '401'].forEach(function (tags) {
+            it('route errors to catch all route for tags: ' + tags, function () {
+                failboat.handleError(Failboat.tag({}, tags));
+                expect(routes['*'], 'was called once');
+            });
+
+            it('emits an errorRouted event with the matchingRoute for tags: ' + tags, function () {
+                var err = Failboat.tag({}, tags);
+                failboat.handleError(err);
+                expect(failboat.onErrorRouted, 'was called with', err, '*');
+            });
+        });
+    });
+
     describe('route syntax', function () {
         var routes;
         beforeEach(function () {
@@ -223,9 +267,17 @@ describe('Failboat', function () {
             }, 'to throw', 'Failboat.tag require tags to be strings or numbers was given: "null"');
         });
 
+        ['*', '?', 'foo*', 'bar?', 'b**', 'foo-bar'].forEach(function (tag) {
+            it('fails when given a tag containing special characters: ' + tag, function () {
+                expect(function () {
+                    Failboat.tag({}, 'using special characters', tag);
+                }, 'to throw', 'Failboat.tag require tags to be strings or numbers without special characters was given: "' + tag + '"');
+            });
+        });
+
         it('added the given tags to the error object', function () {
             var err = {};
-            Failboat.tag(err, 'this', 'is', 'some tags');
+            Failboat.tag(err, 'this', 'is', '', '    ', 'some tags');
             expect(err.tags, 'to equal', ['this', 'is', 'some', 'tags']);
         });
 
