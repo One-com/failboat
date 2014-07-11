@@ -194,10 +194,10 @@ describe('Failboat', function () {
     });
 
     describe('with a catch all route configured', function () {
-        var routes, parentRoutes, extendedFailboat;
+        var routes, extendedFailboat;
 
         beforeEach(function () {
-            parentRoutes =  {
+            var parentRoutes =  {
                 '401': sinon.spy()
             };
 
@@ -206,7 +206,10 @@ describe('Failboat', function () {
                 '404': sinon.spy(),
                 '*': sinon.spy()
             };
-            failboat = new Failboat(parentRoutes).extend(routes);
+
+            extendedFailboat = new Failboat(parentRoutes);
+            extendedFailboat.onErrorRouted = sinon.spy();
+            failboat = extendedFailboat.extend(routes);
             failboat.onErrorRouted = sinon.spy();
         });
 
@@ -220,6 +223,7 @@ describe('Failboat', function () {
                 var err = Failboat.tag({}, tags);
                 failboat.handleError(err);
                 expect(failboat.onErrorRouted, 'was called with', err, tags);
+                expect(extendedFailboat.onErrorRouted, 'was called with', err, tags);
             });
         });
 
@@ -233,6 +237,7 @@ describe('Failboat', function () {
                 var err = Failboat.tag({}, tags);
                 failboat.handleError(err);
                 expect(failboat.onErrorRouted, 'was called with', err, '*');
+                expect(extendedFailboat.onErrorRouted, 'was called with', err, '*');
             });
         });
     });
