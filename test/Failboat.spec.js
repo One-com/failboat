@@ -12,10 +12,10 @@ describe('Failboat', function () {
     });
 
     describe('handleError', function () {
-        it('fails when not given an error object', function () {
-            expect(function () {
-                failboat.handleError();
-            }, 'to throw', 'Failboat.handleError requires a tagged error object as the first argument');
+        it('ignores calls with no arguments', function () {
+            failboat.routeError = sinon.spy();
+            failboat.handleError();
+            expect(failboat.routeError, 'was not called');
         });
 
         it('fails when given an error object without tags', function () {
