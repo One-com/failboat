@@ -46,6 +46,11 @@ describe('Failboat', function () {
                 failboat.handleError(err);
                 expect(failboat.onErrorRouted, 'was called with', err, null);
             });
+
+            it('returns false as the error was not handled', function () {
+                var err = Failboat.tag({}, 'error');
+                expect(failboat.handleError(err), 'to be false');
+            });
         });
     });
 
@@ -77,30 +82,56 @@ describe('Failboat', function () {
 
         describe('when a route maps to a new route', function () {
             describe('and the route exist on this failboat', function () {
-                it('route the error to the alias', function () {
-                    var spy = sinon.spy();
-                    failboat.handleError(Failboat.tag({}, '444 MailNotFound'), {
+                var spy, error;
+                beforeEach(function () {
+                    error = Failboat.tag({}, '444 MailNotFound');
+                    spy = sinon.spy();
+                    failboat = failboat.extend({
                         '404 MailNotFound': spy,
                         '444 MailNotFound': '404 MailNotFound'
                     });
+                });
+                it('route the error to the alias', function () {
+                    failboat.handleError(error);
                     expect(spy, 'was called once');
+                });
+
+                it('handleError returns true as the error was handled', function () {
+                    expect(failboat.handleError(error), 'to be true');
                 });
             });
 
             describe('and the route does not exist on this failboat', function () {
-                it('route the error to the parent with the alias', function () {
-                    failboat.handleError(Failboat.tag({}, '444 MailNotFound'), {
+                var error;
+                beforeEach(function () {
+                    error = Failboat.tag({}, '444 MailNotFound');
+                    failboat = failboat.extend({
                         '444 MailNotFound': '404 MailNotFound'
                     });
+                });
+
+                it('route the error to the parent with the alias', function () {
+                    failboat.handleError(error);
                     expect(routes['404 MailNotFound'], 'was called once');
+                });
+
+                it('handleError returns true as the error was handled', function () {
+                    expect(failboat.handleError(error), 'to be true');
                 });
             });
         });
 
-        it('tags with no corresponding route emits an errorRouted event where matchingRoute is null', function () {
-            var err = Failboat.tag({}, 'error');
-            failboat.handleError(err);
-            expect(failboat.onErrorRouted, 'was called with', err, null);
+        describe('errors tagged with no corresponding route', function () {
+            it('emits an errorRouted event where matchingRoute is null', function () {
+                var err = Failboat.tag({}, 'error');
+                failboat.handleError(err);
+                expect(failboat.onErrorRouted, 'was called with', err, null);
+            });
+
+            it('handleError returns false as the error was not handled', function () {
+                var err = Failboat.tag({}, 'error');
+                expect(failboat.handleError(err), 'to be false');
+            });
         });
 
         describe('given an execution context', function () {
@@ -185,10 +216,17 @@ describe('Failboat', function () {
                 expect(extendedRoutes['404 FolderNotFound'], 'was called once');
             });
 
-            it('tags with no corresponding route emits an errorRouted event where matchingRoute is null', function () {
-                var err = Failboat.tag({}, 'error');
-                extendedFailboat.handleError(err);
-                expect(failboat.onErrorRouted, 'was called with', err, null);
+            describe('errors tagged with no corresponding route', function () {
+                it('emits an errorRouted event where matchingRoute is null', function () {
+                    var err = Failboat.tag({}, 'error');
+                    extendedFailboat.handleError(err);
+                    expect(failboat.onErrorRouted, 'was called with', err, null);
+                });
+
+                it('handleError returns false as the error was not handled', function () {
+                    var err = Failboat.tag({}, 'error');
+                    expect(extendedFailboat.handleError(err), 'to be false');
+                });
             });
         });
     });
@@ -225,6 +263,11 @@ describe('Failboat', function () {
                 expect(failboat.onErrorRouted, 'was called with', err, tags);
                 expect(extendedFailboat.onErrorRouted, 'was called with', err, tags);
             });
+
+            it('handleError returns true as the error was handled by a specific route for tags:' + tags, function () {
+                var err = Failboat.tag({}, tags);
+                expect(failboat.handleError(err), 'to be true');
+            });
         });
 
         ['503', '401'].forEach(function (tags) {
@@ -238,6 +281,11 @@ describe('Failboat', function () {
                 failboat.handleError(err);
                 expect(failboat.onErrorRouted, 'was called with', err, '*');
                 expect(extendedFailboat.onErrorRouted, 'was called with', err, '*');
+            });
+
+            it('handleError returns true as the error was handled by the catch all route for tags:' + tags, function () {
+                var err = Failboat.tag({}, tags);
+                expect(failboat.handleError(err), 'to be true');
             });
         });
     });

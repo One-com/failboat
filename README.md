@@ -229,6 +229,9 @@ longest prefix of the tags array. If it does not find an appropiate
 handler it will delegate to it's parent failboat for handling the
 error.
 
+Returns true if the error was handled by this failboat or one of it's
+ancestors; otherwise false is returned.
+
 ```js
 var err = Failboat.tag(new Error(), '404', 'FolderNotFound', 'LoadMailsAction');
 failboat.handleError(err);
