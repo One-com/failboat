@@ -20,8 +20,8 @@ describe('Failboat', function () {
 
         it('fails when given an error object without tags', function () {
             expect(function () {
-                failboat.handleError({});
-            }, 'to throw', 'Failboat.handleError requires a tagged error object as the first argument');
+                failboat.handleError(new Error());
+            }, 'to throw', /^Failboat.handleError requires a tagged error object as the first argument\n  Error\n    at [^\n]+Failboat.spec/);
         });
 
         describe('given routes', function () {

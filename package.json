@@ -12,9 +12,9 @@
   "author": "Sune Simonsen",
   "license": "BSD-2-Clause",
   "devDependencies": {
-    "mocha": "~1.17.1",
-    "unexpected": "~2.1.0",
-    "unexpected-sinon": "~1.0.0",
-    "sinon": "~1.8.1"
+    "mocha": "1.17.1",
+    "unexpected": "2.1.0",
+    "unexpected-sinon": "1.0.0",
+    "sinon": "1.8.1"
   }
 }
