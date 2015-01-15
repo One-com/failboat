@@ -1,6 +1,6 @@
 {
   "name": "failboat",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Generic error routing",
   "main": "lib/FailBoat.js",
   "scripts": {
