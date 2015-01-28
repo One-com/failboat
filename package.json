@@ -11,7 +11,7 @@
     "error"
   ],
   "author": "Sune Simonsen",
-  "license": "BSD-2-Clause",
+  "license": "BSD-3-Clause",
   "devDependencies": {
     "mocha": "1.17.1",
     "unexpected": "2.1.0",
