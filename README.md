@@ -12,6 +12,54 @@ the error to the correct error handler.
 The only requirement for routing errors to their handlers is that the
 error contains a property `tags` that is a non-empty array of strings.
 
+## Installation
+
+### Node
+
+Install it with NPM or add it to your `package.json`:
+
+```
+$ npm install failboat
+```
+
+Then:
+
+```js
+var Failboat = require('failboat');
+```
+
+### Browser
+
+Include `Failboat.js`.
+
+```html
+<script src="Failboat.js"></script>
+```
+
+this will expose the `Failboat` constructor under the following namespace:
+
+```js
+var Failboat = com.one.Failboat;
+```
+
+### RequireJS
+
+Include the library with RequireJS the following way:
+
+```js
+require.config({
+    paths: {
+        failboat: 'path/to/failboat/lib/Failboat.js'
+    }
+});
+
+define(['failboat'], function (Failboat) {
+   // Your code
+});
+```
+
+## Example
+
 The routing is best explained by example.
 
 ```js
