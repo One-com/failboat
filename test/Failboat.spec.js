@@ -67,6 +67,16 @@ describe('Failboat', function () {
             failboat.onErrorRouted = sinon.spy();
         });
 
+        it('should match even if the tags of an error are in a different order than the route definition', function () {
+            failboat.handleError(Failboat.tag({}, '404', 'LoadMailsAction', 'FolderNotFound'));
+            expect(routes['404 FolderNotFound LoadMailsAction'], 'was called once');
+        });
+
+        it('should match even if error has more tags than the most specific route', function () {
+            failboat.handleError(Failboat.tag({}, '404', 'LoadMailsAction', 'FolderNotFound', 'FooBarQuux'));
+            expect(routes['404 FolderNotFound LoadMailsAction'], 'was called once');
+        });
+
         ['404', '404 FolderNotFound', '404 FolderNotFound LoadMailsAction', '404 MailNotFound'].forEach(function (tags) {
             it('route errors to the most specific route for tags: ' + tags, function () {
                 failboat.handleError(Failboat.tag({}, tags));
